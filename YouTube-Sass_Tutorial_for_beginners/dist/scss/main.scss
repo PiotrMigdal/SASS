@@ -1,0 +1,93 @@
+//Import partials
+@import "resets";
+@import "variables";
+//function that you can pass argument to and return
+@function weight($weight-name) {
+    @return map-get($font-weights, $weight-name);
+}
+//mixin so you dont need to repeat the code again and again
+@mixin flexCenter($direction) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: $direction;
+}
+@mixin theme($light-theme: false) {
+    @if $light-theme {
+        //add 100% lighten to background
+        background: lighten($primary-color, 100%);
+        //add 100% dark to font
+        color: darken($text-color, 100%);
+    }
+}
+@mixin mobile {
+    @media (max-width: $mobile){
+        //use @content to return a class and the style content
+        @content;
+    }
+}
+
+//mixin and function are similar but functions are useful specifically because they return values. Mixins are nothing like functions--they usually just provide valuable blocks of code.
+
+body {
+    background-color: $primary-color;
+    color: $text-color;
+}
+
+//BEM Block
+.main {
+    //include mixin
+    @include flexCenter(row);
+
+    //MATH in SASS you cant mix the units
+    width: 100% - 30%;
+    //MATH in normal CSS you can mix them
+    width: calc(100% - 80px);
+
+    margin: 0 auto;
+    @include mobile {
+        flex-direction: column;
+    }
+    //nasting to create .main__paragraph as BEM Element
+    &__paragraph {
+        line-height: 1.5;
+
+        //you should do this but you have function...
+        //font-weight: map-get($font-weights, bold);
+        //... so  you can do FUNCTION
+        font-weight: weight(bold);
+
+        //.main__paragraph--right as BEM Modifier
+        &--right {
+            text-align: right;
+        }
+        //hover and other pseudo
+        &:hover {
+            color: pink;
+        }
+
+        //You can EXTEND to use all the style from other paragraph
+        &--left {
+            @extend .main__paragraph--right;
+            &:hover {
+                color: $secondary-color;
+            }
+        }
+    }
+    /*
+    //or you can use INTERPELATION (not for BEM) so it will show .main .main__paragraph
+    #{&}__paragraph {
+        line-height: 1.5;
+        font-weight: map-get($font-weights, bold);
+        //.main__paragraph--right as BEM Modifier
+        #{&}--right {
+            text-align: right;
+        }
+    }
+    */
+}
+
+//Light mode mixin
+.light {
+    @include theme($light-theme: false);
+}
